@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\InputController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -20,4 +22,7 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
+
+    Route::get('/input', [InputController::class, 'index']);
+    Route::post('/import', [InputController::class, 'import'])->name('import');
 });
