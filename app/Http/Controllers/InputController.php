@@ -73,9 +73,69 @@ class InputController extends Controller
             $stdDeviation = sqrt($variance);
         }
 
-        // 卡四捨五入
-        echo "<pre>" .  print_r($average, 1) .  "</pre>";
-        exit;
+
+        // 1. 跳躍起始點：(成立/判斷條件) 在1秒之後並Fz(N)最接近且小於(N - 5*StdN)的第一個點位
+        $jumps = [];
+        $jump = $average - (5 * $stdDeviation);
+        foreach ($csv->getRecords() as $index => $record) {
+
+            // 在1秒之不處理
+            if ($index < 1001) {
+                continue;
+            }
+
+            if($record[$headers[2]] < $jump){
+                $jumps[] = [
+                    'time' => $record[$headers[1]],
+                    'n' => $record[$headers[2]],
+                    'index' => $index
+                ];
+                
+                break;
+            }
+
+        }
+
+
+        // 2. 制動起始點：(成立/判斷條件) 最系統重(N) ±1個點位裡最接近的
+        $brake = [];
+        foreach ($csv->getRecords() as $index => $record) {
+
+            // 在跳躍起始點秒之不處理
+            if ($index < $jumps[0]['index'] + 1) {
+                continue;
+            }
+
+            if($record[$headers[2]] > $average){
+
+                // 上一點位
+                $previou = $average - $previouRecord[$headers[2]];
+
+                // 下一點位
+                $next = $record[$headers[2]] - $average;
+
+
+             
+                if($previou < $next){
+                    $brake[] = [
+                        'time' => $previouRecord[$headers[1]],
+                        'n' => $previouRecord[$headers[2]],
+                        'index' => $index  - 1
+                    ];
+
+                }else{
+                    $brake[] = [
+                        'time' => $record[$headers[1]],
+                        'n' => $record[$headers[2]],
+                        'index' => $index
+                    ];
+                }
+
+                break;
+            }
+
+            $previouRecord = $record;
+        }
 
 
 
@@ -84,7 +144,9 @@ class InputController extends Controller
             'average' => $average,
             'stdDeviation' => $stdDeviation,
             'stdDeviation5' => 5 * $stdDeviation,
-            'filename' => $filename
+            'filename' => $filename,
+            'jumps' => $jumps,
+            'brake' => $brake
         ]);
     }
 

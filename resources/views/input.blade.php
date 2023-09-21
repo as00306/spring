@@ -3,6 +3,24 @@
 
 @section('css')
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 @stop
 
 @section('page_header')
@@ -40,9 +58,33 @@
                 </thead>
                 <tbody>
                         <tr>
-                            <td>{{ number_format($average, 2, '.', '') }}</td>
-                            <td>{{ number_format($stdDeviation, 2, '.', '') }}</td>
-                            <td>{{ number_format($stdDeviation5, 2, '.', '') }}</td>
+                            <td>{{ $average }}</td>
+                            <td>{{ $stdDeviation }}</td>
+                            <td>{{ $stdDeviation5 }}</td>
+                        </tr>
+                </tbody>
+            </table>
+
+            <br>
+
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>關鍵點位</th>
+                        <th>時間(s)</th>
+                        <th>座標位置</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        <tr>
+                            <td>跳躍起始點</td>
+                            <td>{{ $jumps[0]['time']}}</td>
+                            <td>{{ $jumps[0]['n']}}</td>
+                        </tr>
+                        <tr>
+                            <td>制動起始點</td>
+                            <td>{{ $brake[0]['time']}}</td>
+                            <td>{{ $brake[0]['n']}}</td>
                         </tr>
                 </tbody>
             </table>
